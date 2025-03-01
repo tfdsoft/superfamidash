@@ -107,9 +107,124 @@ uint8_t * level_data;
 
 
 // SRAM
-// [TODO]
+
+#pragma bss-name("SRAM")
+uint8_t SRAM_VALIDATE[4];
+
+uint8_t coin1_obtained[MAX_LEVEL_COMPLETE];
+uint8_t coin2_obtained[MAX_LEVEL_COMPLETE];
+uint8_t coin3_obtained[MAX_LEVEL_COMPLETE];
+
+uint8_t LEVELCOMPLETE[MAX_LEVEL_COMPLETE];
+uint8_t level_completeness_normal[MAX_LEVEL_COMPLETE*2];
+#define level_completeness_practice (&level_completeness_normal[MAX_LEVEL_COMPLETE])
+uint8_t achievements[0x20];
+
+uint8_t invisible;
+uint8_t twoplayer;
+
+/* memory optimization */
+//uint8_t oneptwoplayer;
+//uint8_t jumpsound;
+//uint8_t platformer;
+//uint8_t musicoff;
+//uint8_t sfxoff;
+uint8_t options;
+#define oneptwoplayer 0x01
+#define jumpsound 0x02
+#define platformer 0x04
+#define debugtoggle 0x08
+
+#define sfxoff 0x40
+#define musicoff 0x80
+
+uint8_t icon;
+uint8_t icon_colors[3];
+
+#define color1 icon_colors[0]
+#define color2 icon_colors[1]
+#define color3 icon_colors[2]
+
+uint8_t cursedmusic;
+uint8_t discomode;
+uint8_t trails;
+uint8_t viseffects;
+uint8_t retro_mode;
+uint8_t palette_cycle_mode;
+uint8_t gameboy_mode;
+uint8_t invisblocks;
+uint8_t cam_seesaw;
+uint8_t forced_credits;
+extern uint8_t extceil;
+uint8_t exitingLevelSelect;
+uint8_t drawBarFlag;
+uint8_t exitPortalTimer;
+uint8_t menu_music;
+uint8_t auto_practicepoints;
 
 
+uint8_t jimsheatballalive[MAX_FIREBALLS]; //jims heatball shit
+uint16_t jimsheatballx[MAX_FIREBALLS]; //jims heatball shit
+uint16_t jimsheatbally[MAX_FIREBALLS];
+int16_t jimsheatball_vel_x[MAX_FIREBALLS];
+int16_t jimsheatball_vel_y[MAX_FIREBALLS];
+uint8_t jimsheatballframe[MAX_FIREBALLS];
+
+//uint8_t greyscale_mode;
+
+//uint8_t practice_famistudio_state[0xbf];
+
+uint8_t practice_point_count; // = 0;
+uint8_t curr_practice_point;
+uint8_t latest_practice_point;
+
+
+lohi_arr16_decl(practice_player_1_x, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_1_vel_x, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_1_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_1_vel_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_cube_1_rotate, MAX_PRACTICE_POINTS);
+
+lohi_arr16_decl(practice_player_2_x, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_2_vel_x, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_2_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_player_2_vel_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_cube_2_rotate, MAX_PRACTICE_POINTS);
+
+uint8_t practice_player_1_gravity[MAX_PRACTICE_POINTS];
+uint8_t practice_player_2_gravity[MAX_PRACTICE_POINTS];
+uint8_t practice_player_1_mini[MAX_PRACTICE_POINTS];
+uint8_t practice_player_2_mini[MAX_PRACTICE_POINTS];
+uint8_t practice_player_1_was_on_slope_counter[MAX_PRACTICE_POINTS];
+uint8_t practice_player_2_was_on_slope_counter[MAX_PRACTICE_POINTS];
+int8_t practice_player_1_slope_frames[MAX_PRACTICE_POINTS];
+int8_t practice_player_2_slope_frames[MAX_PRACTICE_POINTS];
+int8_t practice_player_1_slope_type[MAX_PRACTICE_POINTS];
+int8_t practice_player_2_slope_type[MAX_PRACTICE_POINTS];
+int8_t practice_player_1_last_slope_type[MAX_PRACTICE_POINTS];
+int8_t practice_player_2_last_slope_type[MAX_PRACTICE_POINTS];
+
+
+lohi_arr32_decl(practice_scroll_x, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_scroll_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_seam_scroll_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_old_draw_scroll_y, MAX_PRACTICE_POINTS);
+lohi_arr16_decl(practice_target_scroll_y, MAX_PRACTICE_POINTS);
+
+uint8_t practice_player_gamemode[MAX_PRACTICE_POINTS];
+uint8_t practice_dual[MAX_PRACTICE_POINTS];
+uint8_t practice_speed[MAX_PRACTICE_POINTS];
+uint8_t practice_parallax_scroll_x[MAX_PRACTICE_POINTS];
+uint8_t practice_outline_color[MAX_PRACTICE_POINTS];
+uint8_t practice_g_color_type[MAX_PRACTICE_POINTS];
+uint8_t practice_bg_color_type[MAX_PRACTICE_POINTS];
+//uint8_t practice_trail_sprites_visible[9];
+//uint8_t practice_player_old_posy[9];
+uint8_t practice_orbactive[MAX_PRACTICE_POINTS];
+
+
+
+#define poweroffcheck SRAM_VALIDATE[3]
 // Regular NES RAM
 #pragma bss-name("BSS")
 

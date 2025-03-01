@@ -11,8 +11,10 @@
 .include "globals.asm"
 
 .include "header.asm"
+.include "czpage.asm"
 .include "zeropage.asm"
 .include "init.asm"
+.include "oam.asm"
 .include "sneslib.asm"
 .include "bank1.asm"
 .include "bank2.asm"

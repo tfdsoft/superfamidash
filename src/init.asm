@@ -118,8 +118,18 @@ _exit:
 	jml _main
 
 nmi:
+	ai8
 	bit rdnmi
 	inc nmi_counter
+	pha
+	phx
+	phy
+	
+	ply
+	plx
+	pla
+	rti
+
 no_int:
 irq:
 	rti

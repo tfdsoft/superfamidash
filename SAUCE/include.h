@@ -21,6 +21,10 @@
 #include "defines/physics_defines.h"
 #include "defines/level_defines.h"
 
+// grounds go here
+#pragma rodata-name (push, "BANK1")
+#include "defines/menunametable.h"
+#pragma rodata-name (pop)
 // ....
 
 // .......
@@ -28,3 +32,9 @@
 
 
 #include "famidash.h"   // where everything is declared. don't move this
+
+// .....
+
+// THE GAME STATE DEFINES //
+
+#include "gamestates/state_menu.h"

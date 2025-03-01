@@ -1,10 +1,9 @@
 MEMORY
 {
-	# WRAM
+	# Low RAM
 	ZEROPAGE:	start=$000000, size=$000100;
 	STACK:		start=$000100, size=$000100;
 	BSS:		start=$000200, size=$001E00;
-	
 	
 	# ROM
 	# note: the fast ROM area starts at $808000
@@ -17,13 +16,15 @@ MEMORY
 
 SEGMENTS
 {
+	# TODO: separate SRAM
+	ZEROPAGE:	load = ZEROPAGE, type = zp;
+	BSS:		load = BSS,      type = bss;
+	SRAM:		load = BSS,      type = rw;
+	
 	CODE:	load = ROM0, type = ro;
 	RODATA:	load = ROM0, type = ro;
 	HEADER:	load = ROM0, type = ro, start = $80FFC0;
 	BANK1:	load = ROM1, type = ro;
 	BANK2:	load = ROM2, type = ro;
 	BANK3:	load = ROM3, type = ro;
-	
-	ZEROPAGE:	load = ZEROPAGE, type = zp;
-	BSS:		load = BSS,      type = rw;
 }

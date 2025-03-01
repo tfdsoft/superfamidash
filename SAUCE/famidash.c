@@ -49,7 +49,7 @@ void main(){
 		switch (gameState){
 			case 0x01: {
 				//mmc3_set_prg_bank_1(GET_BANK(state_menu));
-				if (!kandowatchesyousleep) ;//state_menu();
+				if (!kandowatchesyousleep) state_menu();
 				else {
 					//pal_fade_to_withmusic(4,0);
 					//ppu_off();
@@ -60,6 +60,9 @@ void main(){
 					//practice_point_count = 0;
 					//#include "defines/mainmenu_charmap.h"
 					//levelselection();
+					
+					// TODO
+					state_menu();
 				}
 				break;
 			}
