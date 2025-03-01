@@ -26,7 +26,7 @@ bg4vofs   = $2114 ; bg 4 v scroll (write twice)
 m7hofs    = bg1hofs ; mode 7 h scroll
 m7vofs    = bg1vofs ; mode 7 v scroll
 vmain     = $2115 ; video port control
-vmaddl    = $2116 ; VRAM address low
+vmaddl    = $2116 ; VRAM address low  (note: this is a WORD addr not a BYTE addr)
 vmaddh    = $2117 ; VRAM address high
 vmdatal   = $2118 ; VRAM data low
 vmdatah   = $2119 ; VRAM data high
@@ -73,6 +73,16 @@ hdmaen    = $420c ; h-blank DMA enable
 memsel    = $420d ; memory access speed
 
 rdnmi     = $4210 ; NMI flag
+
+; DMA (Channels: 0 - 7)
+.define dmap(n) $4300+n<<4 ; DMA properties
+.define bbad(n) $4301+n<<4 ; B-bus Address ($2100+BBADn)
+.define a1tl(n) $4302+n<<4 ; DMA current address (A Bus)
+.define a1th(n) $4303+n<<4 ; DMA current address (A Bus)
+.define a1b(n)  $4304+n<<4 ; DMA current address (B Bus)
+.define dasl(n) $4305+n<<4 ; DMA byte counter
+.define dash(n) $4306+n<<4 ; DMA byte counter
+.define dasb(n) $4307+n<<4 ; indirect HDMA bank
 
 ; ****** ADDRESSING MODE SWITCHES ******
 ; these macros change the address mode in both ca65

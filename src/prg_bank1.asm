@@ -2,3 +2,6 @@
 
 .segment "PRG_BANK1"
 
+charset:
+.incbin	"chr/test.chr"
+charset_end:
