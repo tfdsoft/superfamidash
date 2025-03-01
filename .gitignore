@@ -1,0 +1,8 @@
+keep/*
+*.dbg
+*.deb
+*.map
+*.dep
+*.lst
+*.o
+*.sfc
