@@ -1,7 +1,7 @@
 ; Copyright (C) 2025 iProgramInCpp
 
-.segment "PRG_HEADER"
-	.byte "SNES TEST            " ; game name
+.segment "HEADER"
+	.byte "SUPER FAMIDASH       " ; game name
 	.byte %00110000   ; fast low ROM
 	.byte %00000000   ; ROM only
 	.byte $04         ; ROM size - 128KB for now

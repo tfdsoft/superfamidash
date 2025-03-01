@@ -6,3 +6,4 @@ keep/*
 *.lst
 *.o
 *.sfc
+TMP/*

@@ -11,7 +11,7 @@
 .include "globals.asm"
 
 .include "header.asm"
-.include "prg_main.asm"
-.include "prg_bank1.asm"
-.include "prg_bank2.asm"
-.include "prg_bank3.asm"
+.include "init.asm"
+.include "bank1.asm"
+.include "bank2.asm"
+.include "bank3.asm"

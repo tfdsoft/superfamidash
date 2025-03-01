@@ -1,6 +1,6 @@
 ; Copyright (C) 2025 iProgramInCpp
 
-.segment "PRG_BANK1"
+.segment "BANK1"
 
 charset:
 .incbin	"chr/test.chr"

@@ -57,6 +57,11 @@ cgadsub   = $2131 ; color math designation
 coldata   = $2132 ; fixed color data
 setini    = $2133 ; screen mode / video select
 
+wmdata    = $2180 ; WRAM data r/w
+wmaddl    = $2181 ; WRAM address low byte
+wmaddm    = $2182 ; WRAM address mid byte
+wmaddh    = $2183 ; WRAM address high byte
+
 nmitimen  = $4200 ; interrupt enable
 wrio      = $4201 ; programmable I/O port
 wrmpya    = $4202 ; multiplicand A (for 8X8->16 hw mult)
