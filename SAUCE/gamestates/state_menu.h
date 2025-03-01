@@ -77,3 +77,7 @@ void state_menu() {
 
 
 CODE_BANK_POP()
+
+// calls the function named
+// this is a HORRIBLE hack concoction
+extern void call_state_menu(void);

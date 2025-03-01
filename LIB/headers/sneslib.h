@@ -16,7 +16,6 @@
 #define NAMETABLE_P  0x2000
 #define TILE_SET     0x6000
 
-
 void __fastcall__ ppu_off(void);
 void __fastcall__ ppu_on_all(void);
 void __fastcall__ ppu_wait_nmi(void);

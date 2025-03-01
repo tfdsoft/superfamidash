@@ -16,15 +16,15 @@ MEMORY
 
 SEGMENTS
 {
-	# TODO: separate SRAM
-	ZEROPAGE:	load = ZEROPAGE, type = zp;
-	BSS:		load = BSS,      type = bss;
-	SRAM:		load = BSS,      type = rw;
-	
-	CODE:	load = ROM0, type = ro;
+	CODE:	load = ROM0, type = ro, align = $100;
 	RODATA:	load = ROM0, type = ro;
 	HEADER:	load = ROM0, type = ro, start = $80FFC0;
 	BANK1:	load = ROM1, type = ro;
 	BANK2:	load = ROM2, type = ro;
 	BANK3:	load = ROM3, type = ro;
+	
+	# TODO: separate SRAM
+	ZEROPAGE:	load = ZEROPAGE, type = zp;
+	BSS:		load = BSS,      type = bss;
+	SRAM:		load = BSS,      type = bss;
 }

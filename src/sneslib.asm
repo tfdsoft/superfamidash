@@ -132,7 +132,7 @@ rand2:
 @21:
 
 	tax
-	lda <RLE_BYTE
+	lda RLE_BYTE
 
 @3:
 
