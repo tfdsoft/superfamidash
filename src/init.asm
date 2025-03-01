@@ -2,13 +2,13 @@
 ; Based on startup code for cc65 and Shiru's NES library
 ; Based on code by Groepaz/Hitmen <groepaz@gmx.net>, Ullrich von Bassewitz <uz@cc65.org>
 
+.segment "CODE"
 .export _exit,__STARTUP__:absolute=1
 .import push0,popa,popax,_main
 
 ; linker generated symbols
 .import __C_STACK_START__, __C_STACK_SIZE__
 
-.segment "CODE"
 reset:
 _exit:
 	sei
@@ -107,14 +107,19 @@ _exit:
 	stx dasl(0)
 	sta mdmaen
 	
+	; enable NMI
+	lda #%10000000
+	sta nmitimen
 	
 	; jump to C main
+	; NOTE: as far as I know CC65 just uses 8 bit acc and index registers.
 	cli
 	ai8
-	jmp _main
+	jml _main
 
 nmi:
 	bit rdnmi
+	inc nmi_counter
 no_int:
 irq:
 	rti
