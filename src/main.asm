@@ -14,6 +14,7 @@
 .include "czpage.asm"
 .include "zeropage.asm"
 .include "init.asm"
+.include "stubs.asm"
 .include "oam.asm"
 .include "sneslib.asm"
 .include "bank1.asm"

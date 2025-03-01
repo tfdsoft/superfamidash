@@ -107,6 +107,32 @@ _exit:
 	stx dasl(0)
 	sta mdmaen
 	
+	; now this is absolutely awful, but I don't think I can get CC65 to generate JSL instructions
+	; or anything like that...   So, 256 bytes of low RAM are used for stubs which call into sneslib
+	; using JSL / RTL.
+	
+	; Address: $001F00
+	lda #$1F
+	stz wmaddl
+	sta wmaddm
+	stz wmaddh
+	
+	lda #$00
+	sta dmap(0)  ; incrementing address transfer to WRAM
+	
+	; BBAD0 remains the same.
+	
+	ldx #.loword(stubs_begin)
+	stx a1tl(0)
+	lda #.bankbyte(stubs_begin)
+	sta a1b(0)
+	ldx #256
+	sta dasl(0)
+	
+	; transfer!
+	lda #1
+	sta mdmaen
+	
 	; enable NMI
 	lda #%10000000
 	sta nmitimen
