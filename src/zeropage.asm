@@ -6,6 +6,9 @@
 .export _joypad2
 .export _joypad1h
 .export _joypad2h
+.exportzp _temp_ptr=PTR
+.exportzp _temp_len=LEN
+.exportzp _temp_nsp=NEXTSPR
 
 RAND_SEED:		.res 4
 TEMP: 			.res 11
@@ -36,4 +39,3 @@ RLE_LOW		=TEMP
 RLE_HIGH	=TEMP+1
 RLE_TAG		=TEMP+2
 RLE_BYTE	=TEMP+3
-

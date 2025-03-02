@@ -5,14 +5,38 @@
 .i8
 .a8
 
+; This macro fetches the previous program bank from the stack.
+; If you push things before calling this, make sure to account for them and use the _SO variant.
+.macro PREPARE_DATA_BANK_SO n
+	; we need to fetch the current program bank. Luckily, this is
+	; actually relatively straightforward on the 65816:
+	lda 3+n, s
+	
+	; ^ The layout of the stack at this point is `pbr`, `pch`, `pcl`
+	; (this is the order in which they were pushed). Load the 3rd entry.
+	
+	phb
+	; Use it as the current data bank.
+	pha
+	plb
+.endmacro
+
+.macro PREPARE_DATA_BANK
+	PREPARE_DATA_BANK_SO 0
+.endmacro
+
 .export _ppu_off
 .export _ppu_on_all
 .export _ppu_wait_nmi
 .export _vram_adr
 .export _vram_unrle
+.export __vram_dma
 .export _newrand
 .export _set_scroll_x
 .export _set_scroll_y
+.export __pal_bg
+.export __pal_spr
+.export __pal_all
 
 ; These are supposed to be called using `jsl`.
 ; NOTE: When you add a SNESLIB function, also define it in "stubs.asm".
@@ -24,7 +48,7 @@
 .endproc
 
 .proc _ppu_on_all
-	lda #$00
+	lda #$0F
 	sta inidisp
 	rtl
 .endproc
@@ -105,17 +129,7 @@ rand2:
 	lda #0
 	sta <RLE_LOW
 	
-	; we need to fetch the current program bank. Luckily, this is
-	; actually relatively straightforward on the 65816:
-	lda 3, s
-	
-	; ^ The layout of the stack at this point is `pbr`, `pch`, `pcl`
-	; (this is the order in which they were pushed). Load the 3rd entry.
-	
-	phb
-	; Use it as the current data bank.
-	pha
-	plb
+	PREPARE_DATA_BANK
 	
 	; set address increment mode (increment after writing $2119)
 	lda #%10000000
@@ -183,5 +197,131 @@ rand2:
 .proc _set_scroll_y
 	sta bg1vofs
 	stx bg1vofs
+	rtl
+.endproc
+
+; parameters:
+;    XA - The address of the palette.
+;    NEXTSPR - The bank to load from.
+.proc __pal_bg
+	; prepare a DMA transfer
+	stx a1th(0)
+	sta a1tl(0)
+	
+	lda NEXTSPR
+	sta a1b(0)
+	
+	stz cgadd
+	
+	a16
+	lda #$0100
+	sta dasl(0)
+	
+	a8
+	lda #<cgdata
+	sta bbad(0)
+	
+	stz dmap(0) ; transfer pattern 0, A->B
+	
+	; transfer!
+	lda #1
+	sta mdmaen
+	
+	rtl
+.endproc
+
+; parameters:
+;    XA - The address of the palette.
+;    NEXTSPR - The bank to load from.
+.proc __pal_spr
+	; prepare a DMA transfer
+	stx a1th(0)
+	sta a1tl(0)
+	
+	lda NEXTSPR
+	sta a1b(0)
+	
+	lda #$80
+	sta cgadd
+	
+	a16
+	lda #$0100
+	sta dasl(0)
+	
+	a8
+	lda #<cgdata
+	sta bbad(0)
+	
+	stz dmap(0) ; transfer pattern 0, A->B
+	
+	; transfer!
+	lda #1
+	sta mdmaen
+	
+	rtl
+.endproc
+
+; parameters:
+;    XA - The address of the palette.
+;    NEXTSPR - The bank to load from.
+.proc __pal_all
+	; prepare a DMA transfer
+	stx a1th(0)
+	sta a1tl(0)
+	
+	lda NEXTSPR
+	sta a1b(0)
+	
+	stz cgadd
+	
+	a16
+	lda #$0200
+	sta dasl(0)
+	
+	a8
+	lda #<cgdata
+	sta bbad(0)
+	
+	stz dmap(0) ; transfer pattern 0, A->B
+	
+	; transfer!
+	lda #1
+	sta mdmaen
+	
+	rtl
+.endproc
+
+; parameters:
+;     XA - low 16 bits of source address
+;     NEXTSPR (zp) - high 8 bits of source address
+;     PTR (zp) - VRAM dest word address
+;     LEN (zp) - VRAM transfer length
+.proc __vram_dma
+	stx a1th(0)
+	sta a1tl(0)
+	
+	lda NEXTSPR
+	sta a1b(0)
+	
+	; set address increment mode (increment after writing $2119)
+	lda #%10000000
+	sta vmain
+	
+	a16
+	lda LEN
+	sta dasl(0)
+	lda PTR
+	sta vmaddl
+	a8
+	
+	lda #<vmdatal
+	sta bbad(0)
+	
+	lda #1
+	sta dmap(0) ; transfer pattern 1, A->B
+	
+	;lda #1
+	sta mdmaen ; transfer!
+	
 	rtl
 .endproc

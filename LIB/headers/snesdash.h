@@ -67,6 +67,7 @@ void _display_attempt_counter (uint32_t args);
 #define high_word(a) *((uint16_t*)&a+1)
 
 #define GET_BANK(sym) (__asm__("ldx #0\nlda #<.bank(%v)", sym), __A__)
+#define GET_BANKBYTE(sym) (__asm__("ldx #0\nlda #<.bankbyte(%v)", sym), __A__)
 
 #define uint32_inc(long) (__asm__("inc %v+0 \n bne %s", long, __LINE__), __asm__("inc %v+1 \n bne %s", long, __LINE__), __asm__("inc %v+2 \n bne %s", long, __LINE__), __asm__("inc %v+3 \n  %s:", long, __LINE__))
 

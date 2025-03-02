@@ -30,7 +30,7 @@ build: main.sfc
 
 $(TMP)/%.asm.o: $(SRC)/%.asm
 	@mkdir -p $(dir $@)
-	$(AS) -g --create-dep "$@.dep" --debug-info $< -o $@ --listing "$(TMP)/$(notdir $@).lst" $(DEBUGSW)
+	$(AS) -g --create-dep "$@.dep" --debug-info $< -o $@ -I. --listing "$(TMP)/$(notdir $@).lst" $(DEBUGSW)
 
 $(TMP)/%.asm.o: $(TMP)/%.asm
 	@mkdir -p $(dir $@)

@@ -1,6 +1,8 @@
 
 CODE_BANK_PUSH("BANK1")
 
+extern char menu_graphics[];
+
 void check_if_music_stopped();
 void clear_shit();
 void movement();
@@ -34,8 +36,15 @@ void start_the_level();
 void __longfn__ state_menu() {
 	// ...
 	ppu_off();
+
+	if (all_levels_complete == 0xFC) pal_bg(splashMenu2);
+	else pal_bg (splashMenu);
 	
-	gamemode = 0;
+	newrand();
+	
+	vram_dma(menu_graphics, TILE_SET, 8192);
+	set_bg12_chr_base(TILE_SET, TILE_SET);
+	set_bg_mode(1);
 	
 	//set_title_icon();
 	//set_title_icon();
@@ -67,6 +76,8 @@ void __longfn__ state_menu() {
 	set_scroll_x(0);
 	
 	speed = 1;
+	
+	enable_layers(T_BG1);
 	ppu_on_all();
 	
 	//speed = 2;

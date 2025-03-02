@@ -31,3 +31,7 @@
 .include "bank1.asm"
 .include "bank2.asm"
 .include "bank3.asm"
+.include "bank4.asm"
+.include "bank5.asm"
+.include "bank6.asm"
+.include "bank7.asm"
