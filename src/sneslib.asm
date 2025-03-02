@@ -97,11 +97,25 @@ rand2:
 
 ; TODO: This is a placeholder. It currently sets all attributes
 ; to 0 which may be undesirable. Maybe change this soon.
+;
+; Arguments: XA - Address of data to unpack
 .proc _vram_unrle
 	tay
 	stx <RLE_HIGH
 	lda #0
 	sta <RLE_LOW
+	
+	; we need to fetch the current program bank. Luckily, this is
+	; actually relatively straightforward on the 65816:
+	lda 3, s
+	
+	; ^ The layout of the stack at this point is `pbr`, `pch`, `pcl`
+	; (this is the order in which they were pushed). Load the 3rd entry.
+	
+	phb
+	; Use it as the current data bank.
+	pha
+	plb
 	
 	; set address increment mode (increment after writing $2119)
 	lda #%10000000
@@ -154,7 +168,9 @@ rand2:
 	beq @1
 
 @4:
-
+	
+	; Now, pop the old data bank
+	plb
 	rtl
 .endproc
 

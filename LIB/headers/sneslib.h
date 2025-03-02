@@ -34,7 +34,7 @@ void SNESCALL oam_clear(void);
 
 void SNESCALL vram_adr(uintptr_t adr);
 
-//unpack RLE data to current address of vram, mostly used for nametables
+//unpack RLE data (from current program bank) to current address of vram, mostly used for nametables
 
 void SNESCALL vram_unrle(const void* data);
 
