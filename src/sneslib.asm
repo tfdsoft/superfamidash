@@ -5,33 +5,49 @@
 .i8
 .a8
 
+.export _ppu_off
+.export _ppu_on_all
+.export _ppu_wait_nmi
+.export _vram_adr
+.export _vram_unrle
+.export _newrand
+.export _set_scroll_x
+.export _set_scroll_y
+
 ; These are supposed to be called using `jsl`.
 ; NOTE: When you add a SNESLIB function, also define it in "stubs.asm".
 
-.proc ppu_off
+.proc _ppu_off
 	lda #$8F
 	sta inidisp
 	rtl
 .endproc
 
-.proc ppu_on_all
+.proc _ppu_on_all
 	lda #$00
 	sta inidisp
 	rtl
 .endproc
 
-.proc ppu_wait_nmi
+.proc _ppu_wait_nmi
+	; let the NMI know we're ready
+	inc nmi_semaphore
+	
+	; now wait for the NMI counter to change
 	lda nmi_counter
 :	wai
 	cmp nmi_counter
 	beq :-
+	
+	; okay now we aren't ready anymore
+	dec nmi_semaphore
 	rtl
 .endproc
 
 ;uint8_t __fastcall__ rand8();
 ;Galois random generator, found somewhere
 ;out: A random number 0..255
-.proc newrand
+.proc _newrand
 	ldy #8
 	lda RAND_SEED+0
 :
@@ -73,7 +89,7 @@ rand2:
 	rtl
 .endproc
 
-.proc vram_adr
+.proc _vram_adr
 	stx vmaddh
 	sta vmaddl
 	rtl
@@ -81,7 +97,7 @@ rand2:
 
 ; TODO: This is a placeholder. It currently sets all attributes
 ; to 0 which may be undesirable. Maybe change this soon.
-.proc vram_unrle
+.proc _vram_unrle
 	tay
 	stx <RLE_HIGH
 	lda #0
@@ -142,13 +158,13 @@ rand2:
 	rtl
 .endproc
 
-.proc set_scroll_x
+.proc _set_scroll_x
 	sta bg1hofs
 	stx bg1hofs
 	rtl
 .endproc
 
-.proc set_scroll_y
+.proc _set_scroll_y
 	sta bg1vofs
 	stx bg1vofs
 	rtl

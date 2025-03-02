@@ -2,7 +2,7 @@
 // Change how the game compiles with this one simple trick!
 // assembly programmers HATE this!
 // ============================================================
-
+#pragma longcrt(true)
 
 
 // ADDITIONAL FEATURES ========================================

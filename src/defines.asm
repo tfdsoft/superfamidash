@@ -57,10 +57,10 @@ cgadsub   = $2131 ; color math designation
 coldata   = $2132 ; fixed color data
 setini    = $2133 ; screen mode / video select
 
-wmdata    = $2180 ; WRAM data r/w
-wmaddl    = $2181 ; WRAM address low byte
-wmaddm    = $2182 ; WRAM address mid byte
-wmaddh    = $2183 ; WRAM address high byte
+wmdata    = $2180
+wmaddl    = $2181
+wmaddm    = $2182
+wmaddh    = $2183
 
 nmitimen  = $4200 ; interrupt enable
 wrio      = $4201 ; programmable I/O port
@@ -78,6 +78,13 @@ hdmaen    = $420c ; h-blank DMA enable
 memsel    = $420d ; memory access speed
 
 rdnmi     = $4210 ; NMI flag
+
+hvbjoy    = $4212 ; PPU status, auto joypad status
+
+joy1l     = $4218
+joy1h     = $4219
+joy2l     = $421a
+joy2h     = $421b
 
 ; DMA (Channels: 0 - 7)
 .define dmap(n) $4300+n<<4 ; DMA properties

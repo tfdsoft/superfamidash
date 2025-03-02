@@ -2,13 +2,22 @@
 
 .segment "ZEROPAGE"
 
+.export _joypad1
+.export _joypad2
+.export _joypad1h
+.export _joypad2h
+
 RAND_SEED:		.res 4
 TEMP: 			.res 11
 
-
 nmi_counter:	.res 1
+nmi_semaphore:  .res 1 ; set to positive if ready for NMI, negative if not
 sprid:			.res 1
 
+_joypad2:       .res 1
+_joypad1:       .res 1
+_joypad1h:		.res 1
+_joypad2h:		.res 1
 
 PAD_BUF		=TEMP+1
 

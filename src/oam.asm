@@ -10,6 +10,8 @@ oam_high_table:	.res 32
 
 .export _oam_clear=oam_clear
 
+.segment "CODE"
+
 ; ** SUBROUTINE: oam_clear
 ; desc: Clears OAM.
 ; expects: A and X size: 8 bits
@@ -25,7 +27,7 @@ oam_high_table:	.res 32
 	inx
 	cpx #32
 	bne :-
-	rts
+	rtl
 .endproc
 
 

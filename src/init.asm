@@ -16,18 +16,16 @@ _exit:
 	xce
 	cld
 	
-	ai8
+	ai16
 	
 	; setup stack pointer
-	ldx #$FF
+	ldx #$1FF
 	txs
 	
 	pea 0
 	pld         ; reset direct page pointer to 0
 	phk
 	plb         ; set data bank to program bank
-	
-	ai16
 	
 	; zero the CPU registers nmitimen through memsel
 	; note: since A is 16 bits there are 2 bytes written
@@ -107,34 +105,12 @@ _exit:
 	stx dasl(0)
 	sta mdmaen
 	
-	; now this is absolutely awful, but I don't think I can get CC65 to generate JSL instructions
-	; or anything like that...   So, 256 bytes of low RAM are used for stubs which call into sneslib
-	; using JSL / RTL.
+	; NMIs can't be processed right now, only until the first ppu_wait_nmi()
+	lda #$FF
+	sta nmi_semaphore
 	
-	; Address: $001F00
-	lda #$1F
-	stz wmaddl
-	sta wmaddm
-	stz wmaddh
-	
-	lda #$00
-	sta dmap(0)  ; incrementing address transfer to WRAM
-	
-	; BBAD0 remains the same.
-	
-	ldx #.loword(stubs_begin)
-	stx a1tl(0)
-	lda #.bankbyte(stubs_begin)
-	sta a1b(0)
-	ldx #256
-	sta dasl(0)
-	
-	; transfer!
-	lda #1
-	sta mdmaen
-	
-	; enable NMI
-	lda #%10000000
+	; enable NMI and controller auto-read
+	lda #%10000001
 	sta nmitimen
 	
 	; jump to C main
@@ -142,19 +118,6 @@ _exit:
 	cli
 	ai8
 	jml _main
-
-nmi:
-	ai8
-	bit rdnmi
-	inc nmi_counter
-	pha
-	phx
-	phy
-	
-	ply
-	plx
-	pla
-	rti
 
 no_int:
 irq:

@@ -31,7 +31,7 @@ void start_the_level();
 
 // .......
 
-void state_menu() {
+void __longfn__ state_menu() {
 	// ...
 	ppu_off();
 	
@@ -69,15 +69,13 @@ void state_menu() {
 	speed = 1;
 	ppu_on_all();
 	
+	//speed = 2;
+	
 	// TODO
-	while (1) {
+	while (!(joypad1.press & (PAD_START | PAD_A))){
 		ppu_wait_nmi();
 	}
 }
 
 
 CODE_BANK_POP()
-
-// calls the function named
-// this is a HORRIBLE hack concoction
-extern void call_state_menu(void);

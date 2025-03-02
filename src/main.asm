@@ -2,6 +2,16 @@
 
 ; This file ties everything together.
 
+; -- IMPORTANT --
+;
+; The C calling convention is currently defines as follows. When you call into or return
+; to a C function, the following must be true:
+;
+; - Accumulator is 8 bits
+; - X and Y registers are 8 bits
+; - The direct page register is set to $0000
+; - The data bank register is set to $00
+
 .p816
 .smart
 .feature string_escapes
@@ -14,7 +24,8 @@
 .include "czpage.asm"
 .include "zeropage.asm"
 .include "init.asm"
-.include "stubs.asm"
+.include "nmi.asm"
+.include "joypad.asm"
 .include "oam.asm"
 .include "sneslib.asm"
 .include "bank1.asm"

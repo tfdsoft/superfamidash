@@ -3,14 +3,12 @@ MEMORY
 	# Low RAM
 	ZEROPAGE:	start=$000000, size=$000100;
 	STACK:		start=$000100, size=$000100;
-	BSS:		start=$000200, size=$001D00;
-	STUBS:		start=$001F00, size=$000100;
+	BSS:		start=$000200, size=$001E00;
 	
 	# ROM
 	# note: the fast ROM area starts at $808000
 	# it's mirrored into the slow ROM area.
-	ROMSTB: start=$001F00, size=$0100, type=ro, fill=yes, fillval=$00, bank=$00;
-	ROM0:	start=$808100, size=$7F00, type=ro, fill=yes, fillval=$00, bank=$80;
+	ROM0:	start=$808000, size=$8000, type=ro, fill=yes, fillval=$00, bank=$80;
 	ROM1:	start=$818000, size=$8000, type=ro, fill=yes, fillval=$00, bank=$81;
 	ROM2:	start=$828000, size=$8000, type=ro, fill=yes, fillval=$00, bank=$82;
 	ROM3:	start=$838000, size=$8000, type=ro, fill=yes, fillval=$00, bank=$83;
@@ -18,7 +16,6 @@ MEMORY
 
 SEGMENTS
 {
-	STUBS:  load = ROMSTB, type = ro, align = $100;
 	CODE:	load = ROM0, type = ro, align = $100;
 	RODATA:	load = ROM0, type = ro;
 	HEADER:	load = ROM0, type = ro, start = $80FFC0;
