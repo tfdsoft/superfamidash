@@ -22,13 +22,21 @@
 #define TILE_SET     0x7000
 
 // Some register defines
-#define BGMODE   0x2105
-#define BG12NBA  0x210B
-#define BG34NBA  0x210C
-#define BGSC(n) (0x2107+(n))
-#define INIDISP  0x2100
-#define TM       0x212C
-#define TS       0x212D
+#define INIDISP    0x2100
+#define BGMODE     0x2105
+#define BGSC(n)   (0x2107+(n))
+#define BG12NBA    0x210b
+#define BG34NBA    0x210c
+#define BG1HOFS    0x210d
+#define BG1VOFS    0x210e
+#define BG2HOFS    0x210f
+#define BG2VOFS    0x2110
+#define BG3HOFS    0x2111
+#define BG3VOFS    0x2112
+#define VMADDR     0x2116
+#define VMDATA     0x2118
+#define TM         0x212C
+#define TS         0x212D
 
 // Register Values
 // inidisp
@@ -40,6 +48,16 @@
 #define T_BG3 0x04
 #define T_BG4 0x08
 #define T_OBJ 0x10
+// dmap
+#define DMAP_PWRAM 0x00  // +0
+#define DMAP_PVRAM 0x01  // +0 +1 : transfer pattern for VRAM
+#define DMAP_POAM  0x02  // +0 +0 : OAM, CGRAM
+#define DMAP_PSCRL 0x03  // +0 +0 +1 +1 : Scroll positions, mode 7 parameters
+#define DMAP_PWIND 0x04  // +0 +1 +2 +3 : Window
+#define DMAP_PCGRAM DMAP_POAM
+#define DMAP_FIXED 0x08  // A bus address is fixed
+#define DMAP_INDIR 0x40  // Using indirect access (within DASB bank)
+#define DMAP_ABDIR 0x80  // If set, transfers B->A instead of A->B
 
 #define POKE(addr, val)    (*(uint8_t*) (addr) = (val))
 #define PEEK(addr)         (*(uint8_t*) (addr))
@@ -71,10 +89,10 @@ void SNESCALL vram_unrle(const void* data);
 uint8_t SNESCALL newrand(void);
 
 void SNESCALL set_scroll_x(uint16_t x);
-// x can be in the range 0-0x1ff, but any value would be fine, it discards higher bits
-
 void SNESCALL set_scroll_y(uint16_t y);
-// y can be in the range 0-0x1ff, but any value would be fine, it discards higher bits
+void SNESCALL set_scroll_x_bg2(uint16_t x);
+void SNESCALL set_scroll_y_bg2(uint16_t y);
+// x/y can be in the range 0-0x1ff, but any value would be fine, it discards higher bits
 
 //set bg and spr palettes, data is 512 bytes array (from current program bank)
 void SNESCALL _pal_all(const void *data);
@@ -111,15 +129,15 @@ void SNESCALL clear_hdma();
 
 // enqueue HDMA for this channel
 void SNESCALL _set_hdma(uint16_t dasb_channel);
-#define set_hdma(channel, dmap, bbad, dasb, hdma_data) do { \
-	temp_ptr = hdma_data;               \
-	temp_len = (bbad << 8) | dmap;      \
+#define set_hdma(channel, dmap, regs, dasb, hdma_data) do { \
+	temp_ptr = (uintptr_t)hdma_data;    \
+	temp_len = (LSB(regs) << 8) | dmap; \
 	temp_nsp = GET_BANKBYTE(hdma_data); \
 	_set_hdma((dasb << 8) | channel);   \
 } while (0)
 
 // enqueue HDMA for this channel but dasb=0
-#define set_hdma_n(channel, dmap, bbad, hdma_data) set_hdma(channel, dmap, bbad, 0, hdma_data)
+#define set_hdma_n(channel, dmap, register, hdma_data) set_hdma(channel, dmap, register, 0, hdma_data)
 
 // set background layer tile set base addresses
 #define __bgbaseaddress(bgba) ((bgba) >> 12) // bgba is a word address

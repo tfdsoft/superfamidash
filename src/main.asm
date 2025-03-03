@@ -4,7 +4,7 @@
 
 ; -- IMPORTANT --
 ;
-; The C calling convention is currently defines as follows. When you call into or return
+; The C calling convention is currently defined as follows. When you call into or return
 ; to a C function, the following must be true:
 ;
 ; - Accumulator is 8 bits

@@ -34,6 +34,8 @@
 .export _newrand
 .export _set_scroll_x
 .export _set_scroll_y
+.export _set_scroll_x_bg2
+.export _set_scroll_y_bg2
 .export __pal_bg
 .export __pal_spr
 .export __pal_all
@@ -191,14 +193,30 @@ rand2:
 .endproc
 
 .proc _set_scroll_x
-	sta bg1hofs
-	stx bg1hofs
+	sta f:scroll_x
+	tax
+	sta f:scroll_x+1
 	rtl
 .endproc
 
 .proc _set_scroll_y
-	sta bg1vofs
-	stx bg1vofs
+	sta f:scroll_y
+	tax
+	sta f:scroll_y+1
+	rtl
+.endproc
+
+.proc _set_scroll_x_bg2
+	sta f:scroll_x_bg2
+	tax
+	sta f:scroll_x_bg2+1
+	rtl
+.endproc
+
+.proc _set_scroll_y_bg2
+	sta f:scroll_y_bg2
+	tax
+	sta f:scroll_y_bg2+1
 	rtl
 .endproc
 
@@ -331,7 +349,7 @@ rand2:
 ; clears HDMA flags
 .proc _clear_hdma
 	stz hdma_enable
-	rts
+	rtl
 .endproc
 
 ; sets HDMA for a channel from 0 to 7
@@ -345,28 +363,28 @@ rand2:
 ;   LEN+1 - The BBAD
 .proc __set_hdma
 	and #7
-	tay
-	lda @bitSetTable, y
+	tax
+	lda f:@bitSetTable, x
 	ora hdma_enable
 	sta hdma_enable
 	
 	; OK. Now load the actual properties.  Since this channel
 	; is potentially active we have to store this write somewhere.
 	; I suggest we do it in high RAM.
-	txa
-	sta hdma_dasb, y
+	tya
+	sta f:hdma_dasb, x
 	lda LEN
-	sta hdma_dmap, y
+	sta f:hdma_dmap, x
 	lda LEN+1
-	sta hdma_bbad, y
+	sta f:hdma_bbad, x
 	lda PTR
-	sta hdma_a1tl, y
+	sta f:hdma_a1tl, x
 	lda PTR+1
-	sta hdma_a1th, y
+	sta f:hdma_a1th, x
 	lda NEXTSPR
-	sta hdma_a1b, y
+	sta f:hdma_a1b, x
 	
-	rts
+	rtl
 
 @bitSetTable:
 	.byte $01, $02, $04, $08, $10, $20, $40, $80

@@ -36,5 +36,5 @@ SEGMENTS
 	ZEROPAGE:	load = ZEROPAGE, type = zp;
 	BSS:		load = BSS,      type = bss;
 	SRAM:		load = BSS,      type = bss;
-	HIGHRAM:    load = BSS,      type = bss;
+	HIGHRAM:    load = HIGHRAM,  type = bss;
 }

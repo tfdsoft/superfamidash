@@ -62,6 +62,10 @@ extern const short splashMenu_[];
 extern const short splashMenu2_[];
 extern const short game_start_screenv2[];
 
+// HDMA table to scroll the ground around
+// TODO: MOVE THIS INTO HIGH RAM!
+uint8_t menu_hdma_table[10];
+
 void __longfn__ state_menu() {
 	// ...
 	ppu_off();
@@ -75,6 +79,11 @@ void __longfn__ state_menu() {
 	set_bg12_chr_base(TILE_SET, TILE_SET);
 	set_bg_mode(1);
 	
+	set_scroll_x(0);
+	set_scroll_y(0);
+	set_scroll_x_bg2(0);
+	set_scroll_y_bg2(0);
+	
 	//set_title_icon();
 	//set_title_icon();
 	
@@ -84,10 +93,18 @@ void __longfn__ state_menu() {
 	settingvalue = 0;
 	practice_point_count = 0;
 	
-	//write_hdma_table(menu_hdma_table);
-	////edit_hdma_table(2, low_byte(tmp8));
-	//set_hdma_ptr(hdmaTable);
-	//tmp8 = 0;
+	menu_hdma_table[0] = 127;   // scanline count
+	menu_hdma_table[1] = 0;     // scroll position
+	menu_hdma_table[2] = 0;     // scroll position high
+	menu_hdma_table[3] = 49;    // scanline count
+	menu_hdma_table[4] = 0;     // scroll position
+	menu_hdma_table[5] = 0;     // scroll position high
+	menu_hdma_table[6] = 1;     // scanline count
+	menu_hdma_table[7] = 0;     // scroll position
+	menu_hdma_table[8] = 0;     // scroll position high
+	menu_hdma_table[9] = 0;     // ending marker
+	
+	set_hdma_n(7, DMAP_POAM, BG1HOFS, menu_hdma_table);
 	
 
 	menuMusicCurrentlyPlaying = 1;
@@ -116,6 +133,7 @@ void __longfn__ state_menu() {
 	// TODO
 	while (!(joypad1.press & (PAD_START | PAD_A))){
 		ppu_wait_nmi();
+		menu_hdma_table[7]++;
 	}
 }
 

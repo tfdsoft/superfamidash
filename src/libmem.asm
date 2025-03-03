@@ -46,9 +46,13 @@ hdma_enable: .res 1 ; HDMA presence for each channel
 .segment "HIGHRAM"
 
 ; scheduled HDMAs
-hdma_dmap : .res 8  ; DMAP values
-hdma_bbad : .res 8  ; BBAD values
-hdma_dasb : .res 8  ; DASB values
-hdma_a1tl : .res 8  ; A1TL values
-hdma_a1th : .res 8  ; A1TH values
-hdma_a1b  : .res 8  ; A1B  values
+scroll_x     : .res 2
+scroll_y     : .res 2
+scroll_x_bg2 : .res 2
+scroll_y_bg2 : .res 2
+hdma_dmap    : .res 8  ; DMAP values
+hdma_bbad    : .res 8  ; BBAD values
+hdma_dasb    : .res 8  ; DASB values
+hdma_a1tl    : .res 8  ; A1TL values
+hdma_a1th    : .res 8  ; A1TH values
+hdma_a1b     : .res 8  ; A1B  values
