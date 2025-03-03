@@ -5,4 +5,4 @@
 .export _menu_graphics=menu_graphics
 
 menu_graphics:
-	.incbin "GRAPHICS/menus-4bpp.chr"
+	.incbin "GRAPHICS/title_screen.chr"

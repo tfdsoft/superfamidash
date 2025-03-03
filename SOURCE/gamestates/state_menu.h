@@ -33,12 +33,41 @@ void start_the_level();
 
 // .......
 
+
+const uint8_t loNTAddrTableTitleScreen[]={
+    LSB(NTADR_A(9, 11)),	// -1 = 4
+    LSB(NTADR_A(15, 11)),	// 0
+    LSB(NTADR_A(21, 11)),	// 1 
+    LSB(NTADR_A(12, 17)),	// 2
+    LSB(NTADR_A(18, 17)),	// 3
+    LSB(NTADR_A(27, 1)),	// 4
+    LSB(NTADR_A(9, 11)),	// 5 = 0
+    LSB(NTADR_A(15, 11))	// 5 = 0
+};
+
+const uint8_t hiNTAddrTableTitleScreen[]={
+    MSB(NTADR_A(9, 11)),	// -1 = 4
+    MSB(NTADR_A(15, 11)),	// 0
+    MSB(NTADR_A(21, 11)),	// 1
+    MSB(NTADR_A(12, 17)),	// 2
+    MSB(NTADR_A(18, 17)),	// 3
+    MSB(NTADR_A(27, 1)),	// 4
+    MSB(NTADR_A(9, 11)),	// 5 = 0
+    MSB(NTADR_A(15, 11))	// 5 = 0
+};
+
+// ....
+
+extern const short splashMenu_[];
+extern const short splashMenu2_[];
+extern const short game_start_screenv2[];
+
 void __longfn__ state_menu() {
 	// ...
 	ppu_off();
 
-	if (all_levels_complete == 0xFC) pal_bg(splashMenu2);
-	else pal_bg (splashMenu);
+	if (all_levels_complete == 0xFC) pal_bg(splashMenu2_);
+	else pal_bg (splashMenu_);
 	
 	newrand();
 	
@@ -68,10 +97,12 @@ void __longfn__ state_menu() {
 	oam_clear();
 	
 	
-	vram_adr(NAMETABLE_A);
-	vram_unrle(game_start_screen);
-	vram_adr(NAMETABLE_B);
-	vram_unrle(game_start_screen);
+	vram_dma(game_start_screenv2, NAMETABLE_A, 960*2);
+	
+	//vram_adr(NAMETABLE_A);
+	//vram_unrle(game_start_screen);
+	//vram_adr(NAMETABLE_B);
+	//vram_unrle(game_start_screen);
 	
 	set_scroll_x(0);
 	

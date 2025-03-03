@@ -4,6 +4,7 @@ MEMORY
 	ZEROPAGE:	start=$000000, size=$000100;
 	STACK:		start=$000100, size=$000100;
 	BSS:		start=$000200, size=$001E00;
+	HIGHRAM:    start=$7E2000, size=$01E000;
 	
 	# ROM
 	# note: the fast ROM area starts at $808000
@@ -35,4 +36,5 @@ SEGMENTS
 	ZEROPAGE:	load = ZEROPAGE, type = zp;
 	BSS:		load = BSS,      type = bss;
 	SRAM:		load = BSS,      type = bss;
+	HIGHRAM:    load = BSS,      type = bss;
 }

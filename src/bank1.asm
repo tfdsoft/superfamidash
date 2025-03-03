@@ -2,13 +2,13 @@
 
 .segment "BANK1"
 
-; makes a C to C stub
-.macro makestub name
-	.export .ident(.concat("_CALL_", name))
-	.import .ident(.concat("_", name))
-	.ident(.concat("_CALL_", name)):
-		jsr .ident(.concat("_", name))
-		rts
-.endmacro
+.export _splashMenu_
+.export _splashMenu2_
+_splashMenu_:
+_splashMenu2_:
+	.incbin "GRAPHICS/title_screen.pal"
+	
+.export _game_start_screenv2
+_game_start_screenv2:
+	.incbin "GRAPHICS/title_screen.map"
 
-makestub "state_menu"

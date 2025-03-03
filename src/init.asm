@@ -105,6 +105,9 @@ _exit:
 	stx dasl(0)
 	sta mdmaen
 	
+	; clear housekeeping variables here
+	stz hdma_enable
+	
 	; NMIs can't be processed right now, only until the first ppu_wait_nmi()
 	lda #$FF
 	sta nmi_semaphore

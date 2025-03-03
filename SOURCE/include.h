@@ -39,7 +39,3 @@
 
 #include "gamestates/state_menu.h"
 
-
-
-
-#include "farcalls.h"

@@ -37,6 +37,8 @@
 .export __pal_bg
 .export __pal_spr
 .export __pal_all
+.export _clear_hdma
+.export __set_hdma
 
 ; These are supposed to be called using `jsl`.
 ; NOTE: When you add a SNESLIB function, also define it in "stubs.asm".
@@ -324,4 +326,48 @@ rand2:
 	sta mdmaen ; transfer!
 	
 	rtl
+.endproc
+
+; clears HDMA flags
+.proc _clear_hdma
+	stz hdma_enable
+	rts
+.endproc
+
+; sets HDMA for a channel from 0 to 7
+; C prototype: void SNESCALL _set_hdma(uint16_t dasb_channel);
+; parameters:
+;   reg A - The channel number
+;   reg X - The DASB (indirect HDMA bank)
+;   PTR - The near address of the HDMA table
+;   NSP - The bank byte of the HDMA table
+;   LEN - The DMAP
+;   LEN+1 - The BBAD
+.proc __set_hdma
+	and #7
+	tay
+	lda @bitSetTable, y
+	ora hdma_enable
+	sta hdma_enable
+	
+	; OK. Now load the actual properties.  Since this channel
+	; is potentially active we have to store this write somewhere.
+	; I suggest we do it in high RAM.
+	txa
+	sta hdma_dasb, y
+	lda LEN
+	sta hdma_dmap, y
+	lda LEN+1
+	sta hdma_bbad, y
+	lda PTR
+	sta hdma_a1tl, y
+	lda PTR+1
+	sta hdma_a1th, y
+	lda NEXTSPR
+	sta hdma_a1b, y
+	
+	rts
+
+@bitSetTable:
+	.byte $01, $02, $04, $08, $10, $20, $40, $80
 .endproc

@@ -22,7 +22,7 @@
 
 .include "header.asm"
 .include "czpage.asm"
-.include "zeropage.asm"
+.include "libmem.asm"
 .include "init.asm"
 .include "nmi.asm"
 .include "joypad.asm"

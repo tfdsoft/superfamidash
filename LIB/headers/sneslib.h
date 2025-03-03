@@ -5,7 +5,7 @@
 #define SNESCALL __fastcall__ __longfn__
 
 // VRAM layout:
-// (these are word addresses.  vram_adr() takes word level addresses.)
+// (these are word addresses.  vram_adr() and vram_dma() take word level addresses.)
 // 0x0000 - Nametable A (Upper Left)
 // 0x1000 - Nametable B (Upper Right)
 // 0x2000 - Nametable C (Lower Left)
@@ -106,6 +106,21 @@ void SNESCALL _vram_dma(const void *datanear);
 	_vram_dma(label);                       \
 } while (0)
 
+// clear HDMA for this channel
+void SNESCALL clear_hdma();
+
+// enqueue HDMA for this channel
+void SNESCALL _set_hdma(uint16_t dasb_channel);
+#define set_hdma(channel, dmap, bbad, dasb, hdma_data) do { \
+	temp_ptr = hdma_data;               \
+	temp_len = (bbad << 8) | dmap;      \
+	temp_nsp = GET_BANKBYTE(hdma_data); \
+	_set_hdma((dasb << 8) | channel);   \
+} while (0)
+
+// enqueue HDMA for this channel but dasb=0
+#define set_hdma_n(channel, dmap, bbad, hdma_data) set_hdma(channel, dmap, bbad, 0, hdma_data)
+
 // set background layer tile set base addresses
 #define __bgbaseaddress(bgba) ((bgba) >> 12) // bgba is a word address
 
@@ -202,5 +217,13 @@ extern struct pad* controllingplayer;
 #define MASK_BG			0x08
 #define MASK_EDGE_SPR	0x04
 #define MASK_EDGE_BG	0x02
+
+//macro to calculate nametable address from X,Y in compile time
+
+#define VRAM_OFF(x,y)	(((y)<<5)|(x))
+#define NTADR_A(x,y) 	(NAMETABLE_A|VRAM_OFF(x,y))
+#define NTADR_B(x,y) 	(NAMETABLE_B|VRAM_OFF(x,y))
+#define NTADR_C(x,y) 	(NAMETABLE_C|VRAM_OFF(x,y))
+#define NTADR_D(x,y) 	(NAMETABLE_D|VRAM_OFF(x,y))
 
 #endif//_Sneslib_h

@@ -29,5 +29,3 @@ oam_high_table:	.res 32
 	bne :-
 	rtl
 .endproc
-
-

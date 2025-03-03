@@ -6,4 +6,14 @@ keep/*
 *.lst
 *.o
 *.sfc
+*.nes
+*.exe
+
+# SuperFamiconv remnants
+*.tls
+*.pal
+*.map
+*_tiles.png
+
+# Build Artifacts
 TMP/*
