@@ -2,6 +2,11 @@
 CODE_BANK_PUSH("BANK1")
 
 extern char menu_graphics[];
+extern char parallax_graphics[];
+extern char parallax_data[];
+extern const short splashMenu_[];
+extern const short splashMenu2_[];
+extern const short game_start_screenv2[];
 
 void check_if_music_stopped();
 void clear_shit();
@@ -58,13 +63,10 @@ const uint8_t hiNTAddrTableTitleScreen[]={
 
 // ....
 
-extern const short splashMenu_[];
-extern const short splashMenu2_[];
-extern const short game_start_screenv2[];
-
 // HDMA table to scroll the ground around
 // TODO: MOVE THIS INTO HIGH RAM!
 uint8_t menu_hdma_table[10];
+uint16_t bg_scroll_x;
 
 void __longfn__ state_menu() {
 	// ...
@@ -75,9 +77,12 @@ void __longfn__ state_menu() {
 	
 	newrand();
 	
-	vram_dma(menu_graphics, TILE_SET, 8192);
-	set_bg12_chr_base(TILE_SET, TILE_SET);
+	vram_dma(menu_graphics,     TILE_SET,   8192);
+	vram_dma(parallax_graphics, PARALL_SET, 288);
 	set_bg_mode(1);
+	set_bg12_chr_base(TILE_SET, PARALL_SET);
+	set_bg_tilemap(1, NAMETABLE_A, 0, 0);
+	set_bg_tilemap(2, NAMETABLE_P, 0, 0);
 	
 	set_scroll_x(0);
 	set_scroll_y(0);
@@ -113,8 +118,13 @@ void __longfn__ state_menu() {
 
 	oam_clear();
 	
-	
 	vram_dma(game_start_screenv2, NAMETABLE_A, 960*2);
+	
+	// load in parallax data
+	vram_dma(parallax_data, NAMETABLE_P,        32*9*2);
+	vram_dma(parallax_data, NAMETABLE_P+32*9,   32*9*2);
+	vram_dma(parallax_data, NAMETABLE_P+32*18,  32*9*2);
+	vram_dma(parallax_data, NAMETABLE_P+32*27,  32*3*2);
 	
 	//vram_adr(NAMETABLE_A);
 	//vram_unrle(game_start_screen);
@@ -125,7 +135,7 @@ void __longfn__ state_menu() {
 	
 	speed = 1;
 	
-	enable_layers(T_BG1);
+	enable_layers(T_BG1 | T_BG2);
 	ppu_on_all();
 	
 	//speed = 2;
@@ -133,7 +143,11 @@ void __longfn__ state_menu() {
 	// TODO
 	while (!(joypad1.press & (PAD_START | PAD_A))){
 		ppu_wait_nmi();
-		menu_hdma_table[7]++;
+		bg_scroll_x++;
+		
+		menu_hdma_table[7] = (char) bg_scroll_x;
+		
+		set_scroll_x_bg2(bg_scroll_x >> 1);
 	}
 }
 

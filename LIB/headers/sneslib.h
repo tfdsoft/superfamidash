@@ -19,12 +19,13 @@
 #define NAMETABLE_D  0x0C00
 #define NAMETABLE_P  0x1000 // parallax tile map
 #define SPRITE_SET   0x4000
-#define TILE_SET     0x7000
+#define PARALL_SET   0x6000 // parallax tile set
+#define TILE_SET     0x7000 // normal tile set
 
 // Some register defines
 #define INIDISP    0x2100
 #define BGMODE     0x2105
-#define BGSC(n)   (0x2107+(n))
+#define BGSC(n)   (0x2107+(n)-1)
 #define BG12NBA    0x210b
 #define BG34NBA    0x210c
 #define BG1HOFS    0x210d
@@ -90,6 +91,7 @@ uint8_t SNESCALL newrand(void);
 
 void SNESCALL set_scroll_x(uint16_t x);
 void SNESCALL set_scroll_y(uint16_t y);
+// for the parallax layer
 void SNESCALL set_scroll_x_bg2(uint16_t x);
 void SNESCALL set_scroll_y_bg2(uint16_t y);
 // x/y can be in the range 0-0x1ff, but any value would be fine, it discards higher bits
@@ -141,6 +143,10 @@ void SNESCALL _set_hdma(uint16_t dasb_channel);
 
 // set background layer tile set base addresses
 #define __bgbaseaddress(bgba) ((bgba) >> 12) // bgba is a word address
+
+// - bgn is 1-based
+// - dx, dy means 2 nametables on X and Y
+#define set_bg_tilemap(bgn, addr, dx, dy) POKE(BGSC(bgn), (((addr) >> 8) & 0xFC) | (dx) | ((dy) << 1))
 
 #define set_bg12_chr_base(bg1ba, bg2ba) POKE(BG12NBA, (__bgbaseaddress(bg2ba) << 4) | __bgbaseaddress(bg1ba))
 #define set_bg34_chr_base(bg3ba, bg4ba) POKE(BG34NBA, (__bgbaseaddress(bg4ba) << 4) | __bgbaseaddress(bg3ba))

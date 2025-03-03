@@ -10,6 +10,9 @@
 .exportzp _temp_len=LEN
 .exportzp _temp_nsp=NEXTSPR
 
+tmp1:			.res 1
+tmp2:			.res 1
+
 RAND_SEED:		.res 4
 TEMP: 			.res 11
 

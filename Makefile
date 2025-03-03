@@ -23,8 +23,6 @@ GRAPHICS_OBJECTS = \
 	$(shell find $(GFX) -name *.map) \
 	$(shell find $(GFX) -name *.pal)
 
-$(info $(GRAPHICS_OBJECTS))
-
 # Compiled C objects
 CASSFILES = $(patsubst $(SOURCE)/%, $(TMP)/%.asm, $(CFILES))
 

@@ -28,6 +28,7 @@
 .include "joypad.asm"
 .include "oam.asm"
 .include "sneslib.asm"
+.include "crt0.asm"
 .include "bank1.asm"
 .include "bank2.asm"
 .include "bank3.asm"
