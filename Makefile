@@ -7,17 +7,17 @@ LD = ld65
 #DEBUGSW=
 DEBUGSW=-DDEBUG
 
-# Assembly sources are in src/, C sources are in SAUCE/
+# Assembly sources are in src/, C sources are in SOURCE/
 SRC=src
-SAUCE=SAUCE
+SOURCE=SOURCE
 TMP=TMP
 
 # C and Assembly files to be imported
-CFILES = SAUCE/famidash.c
+CFILES = SOURCE/famidash.c
 ASMFILES = src/main.asm
 
 # Compiled C objects
-CASSFILES = $(patsubst $(SAUCE)/%, $(TMP)/%.asm, $(CFILES))
+CASSFILES = $(patsubst $(SOURCE)/%, $(TMP)/%.asm, $(CFILES))
 
 ASMOBJECTS = $(patsubst $(SRC)/%, $(TMP)/%.o, $(ASMFILES)) $(patsubst %, %.o, $(CASSFILES))
 
@@ -36,9 +36,9 @@ $(TMP)/%.asm.o: $(TMP)/%.asm
 	@mkdir -p $(dir $@)
 	$(AS) -g --create-dep "$@.dep" --debug-info $< -o $@ --listing "$(TMP)/$(notdir $@).lst" $(DEBUGSW)
 
-$(TMP)/%.c.asm: $(SAUCE)/%.c
+$(TMP)/%.c.asm: $(SOURCE)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) -g --create-dep "$@.dep" --debug-info $< -o $@ $(DEBUGSW) -ILIB/headers -I. -ISAUCE --eagerly-inline-funcs -Osir --cpu 65816
+	$(CC) -g --create-dep "$@.dep" --debug-info $< -o $@ $(DEBUGSW) -ILIB/headers -I. -ISOURCE --eagerly-inline-funcs -Osir --cpu 65816
 
 main.sfc: layout $(ASMOBJECTS)
 	$(LD) --dbgfile $@.dbg -C $^ -o $@ -m $@.map
