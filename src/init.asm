@@ -107,6 +107,11 @@ _exit:
 	
 	; clear housekeeping variables here
 	stz hdma_enable
+	lda #$FD
+	sta <RAND_SEED
+	sta <RAND_SEED+1
+	sta <RAND_SEED+2
+	sta <RAND_SEED+3
 	
 	; NMIs can't be processed right now, only until the first ppu_wait_nmi()
 	lda #$FF

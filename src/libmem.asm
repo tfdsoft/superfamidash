@@ -2,6 +2,19 @@
 
 .segment "ZEROPAGE"
 
+sp     : .res 1
+sreg   : .res 1
+regsave: .res 1
+ptr1   : .res 2
+ptr2   : .res 2
+ptr3   : .res 2
+ptr4   : .res 2
+tmp1   : .res 1
+tmp2   : .res 1
+tmp3   : .res 1
+tmp4   : .res 1
+regbank: .res regbanksize
+
 .export _joypad1
 .export _joypad2
 .export _joypad1h
@@ -9,9 +22,6 @@
 .exportzp _temp_ptr=PTR
 .exportzp _temp_len=LEN
 .exportzp _temp_nsp=NEXTSPR
-
-tmp1:			.res 1
-tmp2:			.res 1
 
 RAND_SEED:		.res 4
 TEMP: 			.res 11

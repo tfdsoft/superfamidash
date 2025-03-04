@@ -13,6 +13,9 @@
 #include "sneslib.h"
 #include "snesdash.h"
 
+// some core functions
+#include "core.h"
+
 // ...
 
 
