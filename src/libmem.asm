@@ -59,3 +59,6 @@ hdma_dasb    : .res 8  ; DASB values
 hdma_a1tl    : .res 8  ; A1TL values
 hdma_a1th    : .res 8  ; A1TH values
 hdma_a1b     : .res 8  ; A1B  values
+
+.segment "HIGHRAM2"
+; the slowest type of memory to use. use only as a last resort.

@@ -65,7 +65,10 @@ const uint8_t hiNTAddrTableTitleScreen[]={
 
 // HDMA table to scroll the ground around
 // TODO: MOVE THIS INTO HIGH RAM!
+#pragma bss-name(push, "HIGHRAM")
 uint8_t menu_hdma_table[10];
+#pragma bss-name(pop)
+
 uint16_t bg_scroll_x;
 
 void __longfn__ state_menu() {
@@ -98,6 +101,8 @@ void __longfn__ state_menu() {
 	settingvalue = 0;
 	practice_point_count = 0;
 	
+	USE_DB_HRAM1();
+	
 	menu_hdma_table[0] = 127;   // scanline count
 	menu_hdma_table[1] = 0;     // scroll position
 	menu_hdma_table[2] = 0;     // scroll position high
@@ -108,6 +113,8 @@ void __longfn__ state_menu() {
 	menu_hdma_table[7] = 0;     // scroll position
 	menu_hdma_table[8] = 0;     // scroll position high
 	menu_hdma_table[9] = 0;     // ending marker
+	
+	RESET_DB();
 	
 	set_hdma_n(7, DMAP_POAM, BG1HOFS, menu_hdma_table);
 	
@@ -145,7 +152,9 @@ void __longfn__ state_menu() {
 		ppu_wait_nmi();
 		bg_scroll_x++;
 		
+		USE_DB_HRAM1();
 		menu_hdma_table[7] = (char) bg_scroll_x;
+		RESET_DB();
 		
 		set_scroll_x_bg2(bg_scroll_x >> 1);
 	}

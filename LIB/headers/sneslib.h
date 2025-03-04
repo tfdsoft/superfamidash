@@ -156,6 +156,12 @@ void SNESCALL _set_hdma(uint16_t dasb_channel);
 #define display_on() POKE(INIDISP, INIDISP_ON)
 #define display_off() POKE(INIDISP, INIDISP_OFF)
 
+// data bank operations
+#define USE_DB_HRAM1() asm("ldx #$7E\nphx\nplb")
+#define USE_DB_HRAM2() asm("ldx #$7F\nphx\nplb")
+#define RESET_DB() asm("ldx #0\nphx\nplb")
+#define USE_DB_PRGBANK() asm("phk\nplb")
+
 // set background mode
 #define set_bg_mode(mode) POKE(BGMODE, mode)
 
