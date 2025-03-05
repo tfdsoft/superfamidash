@@ -8,6 +8,7 @@ _splashMenu_:
 _splashMenu2_:
 	.incbin "GRAPHICS/title_screen.pal"
 	.incbin "GRAPHICS/parallax.pal"
+	.incbin "GRAPHICS/tada.pal"
 	
 .export _game_start_screenv2
 _game_start_screenv2:

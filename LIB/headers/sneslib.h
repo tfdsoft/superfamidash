@@ -36,6 +36,8 @@
 #define BG3VOFS    0x2112
 #define VMADDR     0x2116
 #define VMDATA     0x2118
+#define CGADDR     0x2121
+#define CGDATA     0x2122
 #define TM         0x212C
 #define TS         0x212D
 
@@ -164,6 +166,39 @@ void SNESCALL _set_hdma(uint16_t dasb_channel);
 
 // set background mode
 #define set_bg_mode(mode) POKE(BGMODE, mode)
+
+// write exactly one word to VRAM
+#define one_vram_buffer(data, address) do { \
+	POKE(VMADDR+0, (char)(address));        \
+	POKE(VMADDR+1, (char)((address)>>8));   \
+	POKE(VMDATA+0, (char)(data));           \
+	POKE(VMDATA+1, (char)((data)>>8));      \
+} while (0)
+
+// palette modification
+#define pal_idx(idx) POKE(CGADDR, (idx))
+#define pal_write(data) do {           \
+	__AX__ = data;                     \
+	asm("sta $2121\nstx $2121");       \
+} while (0)
+#define pal_col(idx, data) do { \
+	pal_idx(idx);               \
+	pal_write(data);            \
+} while (0)
+
+// OAM add sprite
+// note: do not set bit 1 in attr. it will be used by chrnum instead.
+void SNESCALL _oam_spr(uint16_t chrnum);
+#define oam_spr(x, y, chrnum, attr) do { \
+	low_byte(temp_ptr) = x;              \
+	high_byte(temp_ptr) = y;             \
+	temp_len = attr;                     \
+	_oam_spr(chrnum);                    \
+} while (0)
+
+// NES cross PRG bank jumps
+// You *must* mark the target functions as __longfn__ or SNESCALL.
+#define crossPRGBankJump0(func) func()
 
 struct pad {
     union {

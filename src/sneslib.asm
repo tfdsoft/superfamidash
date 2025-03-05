@@ -41,6 +41,8 @@
 .export __pal_all
 .export _clear_hdma
 .export __set_hdma
+.export _oam_clear
+.export __oam_spr
 
 ; These are supposed to be called using `jsl`.
 ; NOTE: When you add a SNESLIB function, also define it in "stubs.asm".
@@ -388,4 +390,117 @@ rand2:
 
 @bitSetTable:
 	.byte $01, $02, $04, $08, $10, $20, $40, $80
+.endproc
+
+; clears OAM
+.proc _oam_clear
+	lda #.bankbyte(oam_buffer_lo)
+	pha
+	plb
+	
+	; Clears OAM.
+	lda #0
+	ldx #0
+:	sta oam_buffer_lo, x
+	sta oam_buffer_lo + 256, x
+	inx
+	bne :-
+:	sta oam_buffer_hi, x
+	inx
+	cpx #32
+	bne :-
+	
+	lda #0
+	sta f:oam_wrhead
+	sta f:oam_wrhead+1
+	pha
+	plb
+	rtl
+.endproc
+
+; puts out a sprite
+; parameters:
+;    XA  - Sprite number
+;    LEN - Attribute byte Low, 2 Extended attributes bits High
+;    PTR - X coordinate Low, Y coordinate High
+.proc __oam_spr
+	pha
+	; load high RAM 
+	lda #.bankbyte(oam_buffer_lo)
+	pha
+	plb
+	pla
+	
+	; put the high byte of the number into A
+	xba
+	tax
+	and #1
+	; then OR it with the attribute byte
+	ora LEN
+	
+	ai16
+	ldx oam_wrhead
+	
+	; then the tile number and bytes (in one shot)
+	xba ; the order was [TILENUMBER*256+ATTRIBUTES], now it's reversed
+	sta oam_buffer_lo+2, x
+	
+	; now load the X/Y coordinates and write them too in one shot
+	lda PTR
+	sta oam_buffer_lo, x
+	
+	; now transfer the index to A, shift it twice to get the sprite index
+	txa
+	lsr
+	lsr
+	
+	; we got the sprite index, get the bit we should modify
+	pha
+	
+	; first, get the in byte position, multiply it by 4 and add the extended attribute bits
+	and #3
+	sta LEN
+	lda LEN+1
+	asl
+	asl
+	clc
+	adc LEN
+	tay
+	
+	pla
+	
+	; now get the byte index
+	lsr
+	lsr
+	tax
+	ai8
+	
+	; Swap X and Y
+	txa
+	tyx
+	tay
+	lda oam_buffer_hi, y
+	ora f:@table, x
+	sta oam_buffer_hi, y
+	
+	a16
+	
+	; increment the write head now.
+	lda oam_wrhead
+	clc
+	adc #4
+	and #$1FF
+	sta oam_wrhead
+	
+	ai8
+	lda #0
+	pha
+	plb
+	rtl
+
+@table:
+	.byte $00, $00, $00, $00
+	.byte $01, $04, $10, $40
+	.byte $02, $08, $20, $40
+	.byte $03, $0C, $30, $C0
 .endproc

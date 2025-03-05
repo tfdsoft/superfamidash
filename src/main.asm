@@ -26,7 +26,6 @@
 .include "init.asm"
 .include "nmi.asm"
 .include "joypad.asm"
-.include "oam.asm"
 .include "sneslib.asm"
 .include "crt0.asm"
 .include "bank1.asm"

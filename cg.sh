@@ -16,4 +16,5 @@ doAsset () {
 # Format:  doAsset assetName bgColor
 
 doAsset "title_screen" "#040382FF"
+doAsset "tada" "#040382FF"
 doAsset "parallax" "#000000FF" -P 1

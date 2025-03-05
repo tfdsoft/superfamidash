@@ -66,6 +66,11 @@ void _display_attempt_counter (uint32_t args);
 #define low_word(a) *((uint16_t*)&a)
 #define high_word(a) *((uint16_t*)&a+1)
 
+#define fourth_byte(a) *((uint8_t*)&a+3)
+#define third_byte(a) *((uint8_t*)&a+2)
+#define high_byte(a) *((uint8_t*)&a+1)
+#define low_byte(a) *((uint8_t*)&a)
+
 #define GET_BANK(sym) (__asm__("ldx #0\nlda #<.bank(%v)", sym), __A__)
 #define GET_BANKBYTE(sym) (__asm__("ldx #0\nlda #<.bankbyte(%v)", sym), __A__)
 
@@ -112,9 +117,9 @@ extern uint8_t auto_fs_updates;
 
 // For more than 16 bits use extra macros and shit
 // Naming convention: crossPRGBankJump<bitsIn>
-#define crossPRGBankJump0(sym) (__asm__("lda #<%v \n ldx #>%v \n ldy #<.bank(%v) \n jsr crossPRGBankJump ", sym, sym, sym), __asm__("lda ptr3 \n ldx ptr3+1"), __AX__)
-#define crossPRGBankJump8(sym, args) (__A__ = args, __asm__("sta ptr3 "), crossPRGBankJump0(sym))
-#define crossPRGBankJump16(sym, args) (__AX__ = args, __asm__("sta ptr3 \n stx ptr3+1"),crossPRGBankJump0(sym))
+//#define crossPRGBankJump0(sym) (__asm__("lda #<%v \n ldx #>%v \n ldy #<.bank(%v) \n jsr crossPRGBankJump ", sym, sym, sym), __asm__("lda ptr3 \n ldx ptr3+1"), __AX__)
+//#define crossPRGBankJump8(sym, args) (__A__ = args, __asm__("sta ptr3 "), crossPRGBankJump0(sym))
+//#define crossPRGBankJump16(sym, args) (__AX__ = args, __asm__("sta ptr3 \n stx ptr3+1"),crossPRGBankJump0(sym))
 
 // holy fuck i am a genius
 #define do_if_flag_common(func, opcode) do { \

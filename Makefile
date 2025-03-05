@@ -15,11 +15,10 @@ GFX=GRAPHICS
 
 # C and Assembly files to be imported
 CFILES = SOURCE/famidash.c
-ASMFILES = src/main.asm
+ASMFILES = src/main.asm src/snesdash.asm
 
 GRAPHICS_OBJECTS = \
 	$(shell find $(GFX) -name *.tiles.png) \
-	$(shell find $(GFX) -name *.chr) \
 	$(shell find $(GFX) -name *.map) \
 	$(shell find $(GFX) -name *.pal)
 

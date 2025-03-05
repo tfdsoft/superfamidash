@@ -6,3 +6,4 @@
 
 menu_graphics:
 	.incbin "GRAPHICS/title_screen.chr"
+	.incbin "GRAPHICS/tada.chr"

@@ -36,6 +36,33 @@ dontRunNMI:
 ; ** SUBROUTINE: oam_perform_dma
 ; desc: Performs OAM DMA. TODO
 .proc oam_perform_dma
+	stz oamaddl
+	stz oamaddh
+	
+	lda #0
+	sta dmap(0) ; transfer from A to B Bus, increment A Bus address, 1 register write once
+	
+	lda #<oamdata
+	sta bbad(0)
+	
+	lda #.lobyte(oam_buffer_lo)
+	sta a1tl(0)
+	lda #.hibyte(oam_buffer_lo)
+	sta a1th(0)
+	lda #.bankbyte(oam_buffer_lo)
+	sta a1b(0)
+	
+	; 544 bytes
+	lda #<544
+	sta dasl(0)
+	lda #>544
+	sta dash(0)
+	
+	; TODO: Do multiple DMAs at once?
+	; do the transfer now
+	lda #1
+	sta mdmaen
+	
 	rts
 .endproc
 
@@ -49,7 +76,7 @@ dontRunNMI:
 	pha
 	tay
 	
-	lda @bitSetTable, x
+	lda f:@bitSetTable, x
 	bit hdma_enable
 	beq @skip
 	
