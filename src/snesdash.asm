@@ -5,12 +5,14 @@
 .feature string_escapes
 .feature line_continuations
 
+.include "defines.asm"
+
 .segment "CODE"
 
 ; Custom routines implemented specifically for famidash (some are totally not stolen from famitower)
 .importzp _gamemode
 .importzp _tmp1, _tmp2, _tmp3, _tmp4, _tmp5, _tmp6, _tmp7, _tmp8, _tmp9, _temptemp5  ; C-safe temp storage
-.importzp PTR
+.importzp PTR, LEN, NEXTSPR
 .import pusha, pushax, callptr4
 .import _scroll_x, _cursedmusic
 
@@ -87,19 +89,3 @@
 
 ; void __fastcall__ oam_meta_spr_flipped(uint8_t x,uint8_t y,const void *data);
 .segment "CODE"
-
-.export __oam_meta_spr_flipped
-.proc __oam_meta_spr_flipped
-	; AX = data
-	; sreg[0] = x
-	; sreg[1] = y
-	; xargs[0] = flip
-	sta <PTR
-	stx <PTR+1
-
-	
-	
-	
-	rtl
-.endproc
-

@@ -24,6 +24,7 @@
 
 // Some register defines
 #define INIDISP    0x2100
+#define OBSEL      0x2101
 #define BGMODE     0x2105
 #define BGSC(n)   (0x2107+(n)-1)
 #define BG12NBA    0x210b
@@ -158,6 +159,9 @@ void SNESCALL _set_hdma(uint16_t dasb_channel);
 #define display_on() POKE(INIDISP, INIDISP_ON)
 #define display_off() POKE(INIDISP, INIDISP_OFF)
 
+#define sprite_base_and_size(size, baseAddr) POKE(OBSEL, ((baseAddr)>>13) | ((size)<<5))
+#define sprite_base(baseAddr) sprite_base_and_size(0, baseAddr)
+
 // data bank operations
 #define USE_DB_HRAM1() asm("ldx #$7E\nphx\nplb")
 #define USE_DB_HRAM2() asm("ldx #$7F\nphx\nplb")
@@ -188,12 +192,50 @@ void SNESCALL _set_hdma(uint16_t dasb_channel);
 
 // OAM add sprite
 // note: do not set bit 1 in attr. it will be used by chrnum instead.
-void SNESCALL _oam_spr(uint16_t chrnum);
+void SNESCALL _oam_sprex(uint16_t chrnum);
+#define oam_sprex(x, y, chrnum, attr) do { \
+	low_byte(temp_ptr) = x;                \
+	high_byte(temp_ptr) = y;               \
+	temp_len = attr;                       \
+	_oam_spr(chrnum);                      \
+} while (0)
+
+// NES OAM simulation features
+// Draws an 8x16 sprite to the required X/Y coordinate. Automatically
+// converts NES format attribute bitsets to SNES format.
+void SNESCALL _oam_spr(uint16_t args);
 #define oam_spr(x, y, chrnum, attr) do { \
 	low_byte(temp_ptr) = x;              \
 	high_byte(temp_ptr) = y;             \
-	temp_len = attr;                     \
-	_oam_spr(chrnum);                    \
+	_oam_spr((((uint16_t)(attr))<<8)|((uint8_t)(chrnum))); \
+} while (0)
+
+// Draws a meta sprite from data
+void SNESCALL _oam_meta_spr(uint32_t args);
+#define oam_meta_spr(x, y, data) do { \
+	storeBytesToSreg(x, y);           \
+	temp_nsp = GET_BANKBYTE(data);    \
+	__AX__ = (uintptr_t)data;         \
+	_oam_meta_spr(__EAX__);           \
+} while (0)
+
+// Draws a meta sprite from data
+void SNESCALL _oam_meta_spr_disco(uint32_t args);
+#define oam_meta_spr_disco(x, y, data) do { \
+	storeBytesToSreg(x, y);           \
+	temp_nsp = GET_BANKBYTE(data);    \
+	__AX__ = (uintptr_t)data;         \
+	_oam_meta_spr_disco(__EAX__);     \
+} while (0)
+
+// Draws a meta sprite from data
+void SNESCALL _oam_meta_spr_flipped(uint32_t args);
+#define oam_meta_spr_flipped(flip, x, y, data) do { \
+	xargs[0] = flip;                  \
+	storeBytesToSreg(x, y);           \
+	temp_nsp = GET_BANKBYTE(data);    \
+	__AX__ = (uintptr_t)data;         \
+	_oam_meta_spr_flip(__EAX__);      \
 } while (0)
 
 // NES cross PRG bank jumps

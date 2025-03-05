@@ -42,7 +42,9 @@
 .export _clear_hdma
 .export __set_hdma
 .export _oam_clear
+.export __oam_sprex
 .export __oam_spr
+.export __oam_meta_spr
 
 ; These are supposed to be called using `jsl`.
 ; NOTE: When you add a SNESLIB function, also define it in "stubs.asm".
@@ -401,18 +403,24 @@ rand2:
 	; Clears OAM.
 	lda #0
 	ldx #0
-:	sta oam_buffer_lo, x
-	sta oam_buffer_lo + 256, x
-	inx
-	bne :-
 :	sta oam_buffer_hi, x
 	inx
 	cpx #32
 	bne :-
 	
-	lda #0
-	sta f:oam_wrhead
-	sta f:oam_wrhead+1
+	ldx #0
+	lda #$F0
+:	sta oam_buffer_lo+1, x
+	sta oam_buffer_lo+257, x
+	inx
+	inx
+	inx
+	inx
+	bne :-
+	
+	stz oam_wrhead
+	stz oam_wrhead+1
+	lda #$00
 	pha
 	plb
 	rtl
@@ -423,7 +431,7 @@ rand2:
 ;    XA  - Sprite number
 ;    LEN - Attribute byte Low, 2 Extended attributes bits High
 ;    PTR - X coordinate Low, Y coordinate High
-.proc __oam_spr
+.proc __oam_sprex
 	pha
 	; load high RAM 
 	lda #.bankbyte(oam_buffer_lo)
@@ -503,4 +511,207 @@ rand2:
 	.byte $01, $04, $10, $40
 	.byte $02, $08, $20, $40
 	.byte $03, $0C, $30, $C0
+.endproc
+
+; OAM Legacy Sprite
+; This draws an 8x16 sprite to the screen.  It has a few limitations compared to oam_sprex.
+; - Cannot use more than 256 tiles at once.
+; - Cannot change the size of the sprite or place it partly off the left side of the screen.
+; parameters:
+;    XA  - Sprite number (A), Attribute Byte (X)
+;    PTR - X coordinate Low, Y coordinate High
+.proc __oam_spr
+	pha
+	; load high RAM 
+	lda #.bankbyte(oam_buffer_lo)
+	pha
+	plb
+	pla
+	
+	; put the attribute byte in the high part of A
+	xba
+	txa
+	xba
+	
+	i16
+	ldx oam_wrhead
+	
+	; write the X/Y coordinates in one shot
+	a16
+	pha
+	lda PTR
+	sta oam_buffer_lo, x
+	pla
+	a8
+	
+	; then the tile number (low A)
+	; note: it has to be converted from NES format to SNES format.
+	; basically, the Tile Number is formed like this:
+	; AAABCCCD
+	; where B and D are swapped in 8x16 mode
+	pha
+	and #%00011110
+	lsr
+	sta PTR
+	pla
+	and #%11100000
+	ora PTR
+	sta oam_buffer_lo+2, x
+	
+	; high A contains the attributes
+	; we have to convert them to S-NES format (they are in NES format)
+	
+	; the V and H bits are fine.  The priority bit is also in the correct
+	; position although it needs to be flipped, and the other priority bit
+	; must be set to 1 so that sprites always render in front of the parallax
+	xba
+	pha
+	and #%11100000
+	eor #%00100000
+	sta PTR
+	and #%00100000
+	lsr
+	ora #%00100000
+	ora PTR
+	sta PTR
+	
+	; now the palette index needs to be shifted a bit
+	pla
+	and #%00000011
+	asl
+	ora PTR
+	
+	; and now write!
+	sta oam_buffer_lo+3, x
+	
+	; now, duplicate this sprite and offset it by 8 pixels down
+	a16
+	lda oam_buffer_lo, x
+	clc
+	adc #$0800
+	sta oam_buffer_lo+4, x
+	
+	lda oam_buffer_lo+2, x
+	clc
+	adc #$0010
+	sta oam_buffer_lo+6, x
+	
+	; increment the write head now.
+	lda oam_wrhead
+	clc
+	adc #8
+	and #$1FF
+	sta oam_wrhead
+	
+	ai8
+	lda #0
+	pha
+	plb
+	rtl
+.endproc
+
+; OAM Meta Sprite
+; Data format:
+;    [X] [Y] [Tile Number] [NES Attribute Bits]
+; Terminator: 0x80
+;
+; parameters:
+;   XA - Data (near)
+;   NEXTSPR - Data (bank)
+;   sreg[1, 0] = [y, x]
+.proc __oam_meta_spr
+	; AX = data
+	; sreg[0] = x
+	; sreg[1] = y
+	; NEXTSPR = Data Bank
+	sta <PTR
+	stx <PTR+1
+
+	lda NEXTSPR
+	sta PTR+2    ; == LEN
+	lda #.bankbyte(oam_buffer_lo)
+	pha
+	plb
+	
+	ai16
+	ldy #0
+	ldx oam_wrhead
+@loop:
+
+	lda [PTR], y
+	
+	; check if the X is $80
+	a8
+	cmp #$80
+	bne :+
+	beq @end
+:	a16
+	
+	; it's not!
+	; now, Famidash assumes 8x16 sprites. So let's try our best to emulate them.
+	
+	; write the XY coordinates
+	sta oam_buffer_lo, x
+	
+	iny
+	iny
+	
+	; load tile number and attributes
+	lda [PTR], y
+	
+	; only write the tile number for now
+	a8
+	sta oam_buffer_lo + 2, x
+	
+	; put the attributes in the picture
+	xba
+	
+	; the V and H bits are fine.  The priority bit is also in the correct
+	; position although it needs to be flipped, moved 1 to the right, and
+	; 2 must be added, so that sprites are never behind the parallax layer
+	pha
+	and #%11100000
+	eor #%00100000
+	sta PTR+3
+	and #%00100000
+	lsr
+	ora #%00100000
+	ora PTR+3
+	sta PTR+3
+	
+	; now the palette index needs to be shifted a bit
+	pla
+	and #%00000011
+	asl
+	ora PTR+3
+	
+	; there we go, now it's been converted
+	sta oam_buffer_lo + 3, x
+	
+	; now write the high byte
+	a16
+	lda oam_buffer_lo,     x
+	clc
+	adc #$0800
+	sta oam_buffer_lo+4,   x
+	
+	; attributes (high) and tile number (low)
+	lda oam_buffer_lo + 2, x
+	clc
+	adc #$10
+	sta oam_buffer_lo + 6, x
+	
+	; now increment X by 8
+	txa
+	clc
+	adc #8
+	tax
+	jmp @loop
+	
+@end:
+	ai8
+	lda #0
+	pha
+	plb
+	rtl
 .endproc

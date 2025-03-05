@@ -130,6 +130,7 @@ void __longfn__ state_menu() {
 	vram_dma(parallax_graphics, PARALL_SET, 288);
 	set_bg_mode(1);
 	set_bg12_chr_base(TILE_SET, PARALL_SET);
+	sprite_base(SPRITE_SET);
 	set_bg_tilemap(1, NAMETABLE_A, 0, 0);
 	set_bg_tilemap(2, NAMETABLE_P, 0, 0);
 	
@@ -606,7 +607,7 @@ void __longfn__ state_menu() {
 					};
 					if (ballframe != 5) {
 						oam_spr(currplayer_x_small, currplayer_y_small, tmp7, 0x20);
-						oam_spr(currplayer_x_small + 8, currplayer_y_small, tmp7, 0xE0);					
+						oam_spr(currplayer_x_small + 8, currplayer_y_small, tmp7, 0xE0);	
 					}
 					break;					
 			};
