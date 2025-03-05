@@ -86,6 +86,57 @@
 ; .export declaration
 ; the function itself
 
+.segment "RODATA"
 
-; void __fastcall__ oam_meta_spr_flipped(uint8_t x,uint8_t y,const void *data);
+.export _shiftBy4table := shiftBy4table
+shiftBy4table:
+	.byte $00, $10, $20, $30
+	.byte $40, $50, $60, $70
+	.byte $80, $90, $A0, $B0
+	.byte $C0, $D0, $E0, $F0
+
 .segment "CODE"
+; __one_vram_buffer_repeat
+
+.global _level_list_lo, _level_list_hi, _level_list_bank, _sprite_list_lo, _sprite_list_hi, _sprite_list_bank
+.import _song, _speed, _lastgcolortype, _lastbgcolortype
+.import _level_data_bank, _sprite_data_bank
+.import _discomode
+
+; _init_rld
+; _unrle_next_column
+; loadLevelContinuation
+.import umul8x16r24m
+; _dummy_unrle_columns
+; writeToCollisionMap
+.import _scroll_y
+; get_seam_scroll_y
+.global dsrt_fr1O : zp
+; _draw_screen
+; _draw_screen_R_tiles
+; draw_screen_R_attributes
+; draw_screen_UD_tiles_frame0
+; draw_screen_UD_tiles_frame1
+; _load_ground
+; __draw_padded_text
+
+.import _cube_movement, _ship_movement, _ball_movement, _ufo_movement, _robot_movement, _spider_movement, _wave_movement
+.import _retro_mode
+
+; _movement
+
+.import _options, FIRST_MUSIC_BANK
+
+; _music_play
+; famistudio_dpcm_bank_callback
+; _music_update
+
+.import _activesprites_x_lo, _activesprites_x_hi
+.import _activesprites_y_lo, _activesprites_y_hi
+.import _activesprites_type, _activesprites_activated
+.import _activesprites_realx, _activesprites_realy
+; load_next_sprite
+; _calculate_linear_scroll_y
+
+.importzp _currplayer_y
+.import _scroll_y

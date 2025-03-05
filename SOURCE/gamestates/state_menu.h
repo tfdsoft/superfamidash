@@ -8,6 +8,8 @@ extern const short splashMenu_[];
 extern const short splashMenu2_[];
 extern const short game_start_screenv2[];
 
+extern void drawplayerone();
+
 void check_if_music_stopped();
 void clear_shit();
 void movement();

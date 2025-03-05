@@ -38,6 +38,8 @@ _joypad1:       .res 1
 _joypad1h:		.res 1
 _joypad2h:		.res 1
 
+xargs:			.res 4
+
 ; defines based on the TEMP register
 PAD_BUF		=TEMP+1
 

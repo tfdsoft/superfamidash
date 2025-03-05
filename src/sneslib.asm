@@ -620,10 +620,6 @@ rand2:
 ;   NEXTSPR - Data (bank)
 ;   sreg[1, 0] = [y, x]
 .proc __oam_meta_spr
-	; AX = data
-	; sreg[0] = x
-	; sreg[1] = y
-	; NEXTSPR = Data Bank
 	sta <PTR
 	stx <PTR+1
 
@@ -651,6 +647,140 @@ rand2:
 	; now, Famidash assumes 8x16 sprites. So let's try our best to emulate them.
 	
 	; write the XY coordinates
+	a8
+	; X coordinate
+	clc
+	adc sreg+0
+	xba
+	; Y coordinate
+	clc
+	adc sreg+1
+	xba
+	a16
+	
+	sta oam_buffer_lo, x
+	
+	iny
+	iny
+	
+	; load tile number and attributes
+	lda [PTR], y
+	
+	; only write the tile number for now
+	a8
+	sta oam_buffer_lo + 2, x
+	
+	; put the attributes in the picture
+	xba
+	
+	; the V and H bits are fine.  The priority bit is also in the correct
+	; position although it needs to be flipped, moved 1 to the right, and
+	; 2 must be added, so that sprites are never behind the parallax layer
+	pha
+	and #%11100000
+	eor #%00100000
+	sta PTR+3
+	and #%00100000
+	lsr
+	ora #%00100000
+	ora PTR+3
+	sta PTR+3
+	
+	; now the palette index needs to be shifted a bit
+	pla
+	and #%00000011
+	asl
+	ora PTR+3
+	
+	; there we go, now it's been converted
+	sta oam_buffer_lo + 3, x
+	
+	; now write the high byte
+	a16
+	lda oam_buffer_lo,     x
+	clc
+	adc #$0800
+	sta oam_buffer_lo+4,   x
+	
+	; attributes (high) and tile number (low)
+	lda oam_buffer_lo + 2, x
+	clc
+	adc #$10
+	sta oam_buffer_lo + 6, x
+	
+	; now increment X by 8
+	txa
+	clc
+	adc #8
+	tax
+	jmp @loop
+	
+@end:
+	ai8
+	lda #0
+	pha
+	plb
+	rtl
+.endproc
+
+; OAM Meta Sprite Flippable
+; Data format:
+;    [X] [Y] [Tile Number] [NES Attribute Bits]
+; Terminator: 0x80
+;
+; parameters:
+;   XA - Data (near)
+;   NEXTSPR - Data (bank)
+;   sreg[1, 0] = [y, x]
+;   xargs[0] - Flip H/V
+.proc __oam_meta_spr_flipped
+	sta <PTR
+	stx <PTR+1
+
+	lda NEXTSPR
+	sta PTR+2    ; == LEN
+	lda #.bankbyte(oam_buffer_lo)
+	pha
+	plb
+	
+	ai16
+	ldy #0
+	ldx oam_wrhead
+@loop:
+
+	lda [PTR], y
+	
+	; check if the X is $80
+	a8
+	cmp #$80
+	bne :+
+	beq @end
+:	a16
+	
+	; it's not!
+	; now, Famidash assumes 8x16 sprites. So let's try our best to emulate them.
+	a8
+	
+	; process X Coordinate
+	bit xargs+0
+	bvc :+
+	eor #$FF     ; if H flipped, then two's complement
+	adc #($100-8); Carry is clear
+	sec
+:	adc sreg+0
+	
+	xba
+	
+	; process Y Coordinate
+	bit xargs+1
+	bpl :+
+	eor #$FF     ; if V flipped, then two's complement
+	;adc #($100-16);Carry is clear, Y is -16'd because of us doing 8x16 mode
+	sec
+:	adc sreg+1
+	xba
+	
+	a16
 	sta oam_buffer_lo, x
 	
 	iny
